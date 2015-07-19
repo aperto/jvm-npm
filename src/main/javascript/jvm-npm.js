@@ -129,7 +129,7 @@ module = (typeof module == 'undefined') ? {} :  module;
   function findRoots(parent) {
     var r = [];
     r.push( findRoot( parent ) );
-    return r.concat( Require.paths() );
+    return r.concat( Require.paths() ).concat( Require.locatorPaths() );
   }
 
   function parsePaths(paths) {
@@ -167,6 +167,20 @@ module = (typeof module == 'undefined') ? {} :  module;
     // r.push( $PREFIX + "/node/library" );
     return r;
   };
+  
+  /**
+   * Provides additional pathes through an optional binding allowing to locate additional roots.
+   */
+  Require.locatorPaths = function() {
+    var r = [];
+    if ( __locator != undefined ) {
+      var root = __locator.findRoot();
+      if ( root != undefined ) {
+        r.push( root );
+      }
+    }
+    return r;
+  };
 
   function findRoot(parent) {
     if (!parent || !parent.id) { return Require.root; }
@@ -181,7 +195,6 @@ module = (typeof module == 'undefined') ? {} :  module;
   require = Require;
 
   module.exports = Module;
-
 
   function loadJSON(file) {
     var json = JSON.parse(readFile(file));
