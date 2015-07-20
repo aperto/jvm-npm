@@ -31,10 +31,11 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:nodyn/jvm-npm.git</connection>
-    <developerConnection>scm:git:git@github.com:nodyn/jvm-npm.git</developerConnection>
-    <url>git@github.com:nodyn/jvm-npm.git</url>
+    <connection>scm:git:git@github.com:aperto/jvm-npm.git</connection>
+    <developerConnection>scm:git:git@github.com:aperto/jvm-npm.git</developerConnection>
+    <url>git@github.com:aperto/jvm-npm.git</url>
     <tag>HEAD</tag>
+    <!-- branch "aperto" -->
   </scm>
 
   <licenses>
@@ -44,6 +45,19 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>aperto.nexus.snapshots</id>
+      <name>Aperto 3rd party snapshots</name>
+      <url>https://maven.aperto.de/nexus/content/repositories/thirdparty.snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>aperto.nexus.releases</id>
+      <name>Aperto 3rd party</name>
+      <url>https://maven.aperto.de/nexus/content/repositories/thirdparty/</url>
+    </repository>
+  </distributionManagement>
 
   <dependencies>
     <dependency>
