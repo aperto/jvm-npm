@@ -75,7 +75,7 @@ module = (typeof module == 'undefined') ? {} :  module;
 
   function Require(id, parent) {
     var core, native, file = Require.resolve(id, parent);
-
+    System.out.println("{" + id + "," + parent + " (" + (typeof parent) + ")} -> (" + core + "," + native + "," + file + ")");
     if (!file) {
       if (typeof NativeRequire.require === 'function') {
         if (Require.debug) {
@@ -114,6 +114,7 @@ module = (typeof module == 'undefined') ? {} :  module;
       var result = resolveCoreModule(id, root) ||
         resolveAsFile(id, root, '.js')   ||
         resolveAsFile(id, root, '.json') ||
+        resolveAsFileByLocator(id, root) ||
         resolveAsDirectory(id, root)     ||
         resolveAsNodeModule(id, root);
       if ( result ) {
@@ -244,6 +245,13 @@ module = (typeof module == 'undefined') ? {} :  module;
     }
   }
 
+  function resolveAsFileByLocator(id, root) {
+    var file;
+    if ( __locator != undefined ) {
+      return __locator.resolve(id, root);
+    }
+  }
+  
   function resolveCoreModule(id, root) {
     var name = normalizeName(id);
     var classloader = java.lang.Thread.currentThread().getContextClassLoader();
@@ -269,7 +277,7 @@ module = (typeof module == 'undefined') ? {} :  module;
         input = new File(filename);
       }
       // TODO: I think this is not very efficient
-      return new Scanner(input).useDelimiter("\\A").next();
+      return new com.aperto.jvmnpm.ShebangRemover(input).next();
     } catch(e) {
       throw new ModuleError("Cannot read file ["+input+"]: ", "IO_ERROR", e);
     }
