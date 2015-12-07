@@ -47,7 +47,9 @@ module = (typeof module == 'undefined') ? {} :  module;
     } );
     this.exports = {};
 
-    if (parent && parent.children) parent.children.push(this);
+    if (parent && parent.children) {
+      parent.children.push(this);
+    }
 
     this.require = function(id) {
       return Require(id, this);
@@ -57,12 +59,11 @@ module = (typeof module == 'undefined') ? {} :  module;
   Module._load = function _load(file, parent, core, main) {
     var module = new Module(file, parent, core);
     var __FILENAME__ = module.filename;
-    var body   = readFile(module.filename, module.core),
-        dir    = new File(module.filename).getParent(),
-        args   = ['exports', 'module', 'require', '__filename', '__dirname'],
-        func   = new Function(args, body);
-    func.apply(module,
-        [module.exports, module, module.require, module.filename, dir]);
+    var body   = readFile(module.filename, module.core);
+    var dir    = new File(module.filename).getParent();
+    var args   = ['exports', 'module', 'require', '__filename', '__dirname'];
+    var func   = new Function(args, body);
+    func.apply(module, [module.exports, module, module.require, module.filename, dir]);
     module.loaded = true;
     module.main = main;
     return module.exports;
@@ -82,7 +83,9 @@ module = (typeof module == 'undefined') ? {} :  module;
           System.out.println(['Cannot resolve', id, 'defaulting to native'].join(' '));
         }
         native = NativeRequire.require(id);
-        if (native) return native;
+        if (native) {
+	  return native;
+	}
       }
       System.err.println("Cannot find module " + id);
       throw new ModuleError("Cannot find module " + id, "MODULE_NOT_FOUND");
@@ -143,27 +146,19 @@ module = (typeof module == 'undefined') ? {} :  module;
     if ( paths === '' ) {
       return [];
     }
-    var osName = java.lang.System.getProperty("os.name").toLowerCase();
-    var separator;
-
-    if ( osName.indexOf( 'win' ) >= 0 ) {
-      separator = ';';
-    } else {
-      separator = ':';
-    }
-
+    var separator = System.getProperty('path.separator');
     return paths.split( separator );
   }
 
   Require.paths = function() {
     var r = [];
-    r.push( java.lang.System.getProperty( "user.home" ) + "/.node_modules" );
-    r.push( java.lang.System.getProperty( "user.home" ) + "/.node_libraries" );
+    r.push(System.getProperty( "user.home" ) + "/.node_modules");
+    r.push(System.getProperty( "user.home" ) + "/.node_libraries");
 
     if ( Require.NODE_PATH ) {
       r = r.concat( parsePaths( Require.NODE_PATH ) );
     } else {
-      var NODE_PATH = java.lang.System.getenv.NODE_PATH;
+      var NODE_PATH = System.getenv.NODE_PATH;
       if ( NODE_PATH ) {
         r = r.concat( parsePaths( NODE_PATH ) );
       }
@@ -187,7 +182,9 @@ module = (typeof module == 'undefined') ? {} :  module;
   };
 
   function findRoot(parent) {
-    if (!parent || !parent.id) { return Require.root; }
+    if (!parent || !parent.id) { 
+      return Require.root; 
+    }
     var pathParts = parent.id.split('/');
     pathParts.pop();
     return pathParts.join('/');
@@ -214,15 +211,15 @@ module = (typeof module == 'undefined') ? {} :  module;
   }
 
   function resolveAsDirectory(id, root) {
-    var base = [root, id].join('/'),
-        file = new File([base, 'package.json'].join('/'));
-    if (file.exists()) {
+    var base = [root, id].join('/');
+    var file = new File([base, 'package.json'].join('/'));
+    if (file.isFile()) {
       try {
-        var body = readFile(file.getCanonicalPath()),
-            package  = JSON.parse(body);
-        if (package.main) {
-          return (resolveAsFile(package.main, base) ||
-                  resolveAsDirectory(package.main, base));
+        var body = readFile(file.getCanonicalPath());
+        var packageObj = JSON.parse(body);
+        if (packageObj.main) {
+          return (resolveAsFile(packageObj.main, base) ||
+                  resolveAsDirectory(packageObj.main, base));
         }
         // if no package.main exists, look for index.js
         return resolveAsFile('index.js', base);
@@ -237,13 +234,13 @@ module = (typeof module == 'undefined') ? {} :  module;
     var file;
     if ( id.length > 0 && id[0] === '/' ) {
       file = new File(normalizeName(id, ext || '.js'));
-      if (!file.exists()) {
+      if (!file.isFile()) {
         return resolveAsDirectory(id);
       }
     } else {
       file = new File([root, normalizeName(id, ext || '.js')].join('/'));
     }
-    if (file.exists()) {
+    if (file.isFile()) {
       return file.getCanonicalPath();
     }
   }
@@ -295,7 +292,9 @@ module = (typeof module == 'undefined') ? {} :  module;
   // Helper function until ECMAScript 6 is complete
   if (typeof String.prototype.endsWith !== 'function') {
     String.prototype.endsWith = function(suffix) {
-      if (!suffix) return false;
+      if (!suffix) {
+        return false;
+      }
       return this.indexOf(suffix, this.length - suffix.length) !== -1;
     };
   }
